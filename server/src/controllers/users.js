@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
   }
   const id = uuidv4();
   const password_hash = await bcrypt.hash(password, 10);
-  db.prepare('INSERT INTO users (id, email, password_hash, nickname) VALUES (?, ?, ?, ?)').run(id, email, password_hash, nickname || email.split('@')[0]);
+  db.prepare('INSERT INTO users (id, email, password_hash, nickname, plan) VALUES (?, ?, ?, ?, ?)').run(id, email, password_hash, nickname || email.split('@')[0], 'pro');
   const user = db.prepare('SELECT id, email, nickname, plan FROM users WHERE id = ?').get(id);
   const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: '30d' });
   res.json({ token, user });

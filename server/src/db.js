@@ -23,7 +23,7 @@ db.exec(`
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     nickname TEXT,
-    plan TEXT DEFAULT 'free',
+    plan TEXT DEFAULT 'pro',
     ai_calls_today INTEGER DEFAULT 0,
     ai_calls_reset_date TEXT DEFAULT (date('now')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
