@@ -1,0 +1,38 @@
+const router = require('express').Router({ mergeParams: true });
+const auth = require('../middleware/auth');
+const c = require('../controllers/ainovels');
+
+router.use(auth);
+router.get('/', c.list);
+router.post('/', c.create);
+router.get('/:id', c.get);
+router.put('/:id', c.updateNovel);
+router.put('/:id/memory', c.updateMemory);
+router.delete('/:id', c.remove);
+router.get('/:id/volumes', c.listVolumes);
+router.post('/:id/volumes', c.addVolume);
+router.put('/:id/volumes/:vid', c.updateVolume);
+router.post('/:id/volumes/:vid/retry', c.retryVolume);
+router.post('/:id/volumes/:vid/approve', c.approveVolume);
+router.get('/:id/volumes/:vid/chapters', c.listChapters);
+router.post('/:id/volumes/:vid/chapters', c.addChapter);
+router.get('/:id/volumes/:vid/chapters/:cid', c.getChapter);
+router.put('/:id/volumes/:vid/chapters/:cid', c.updateChapter);
+router.delete('/:id/volumes/:vid/chapters/:cid', c.removeChapter);
+router.post('/:id/volumes/:vid/chapters/:cid/generate', c.generateChapter);
+router.post('/:id/volumes/:vid/chapters/:cid/regenerate-summary', c.regenerateSummary);
+router.post('/:id/volumes/:vid/chapters/:cid/extract-status', c.extractProtagonistStatus);
+router.post('/:id/volumes/:vid/chapters/:cid/chat', c.chatChapter);
+router.get('/:id/volumes/:vid/chapters/:cid/chat-history', c.getChapterChatHistory);
+router.delete('/:id/volumes/:vid/chapters/:cid/chat-history', c.clearChapterChatHistory);
+router.put('/:id/volumes/:vid/chapters/:cid/chat-history', c.updateChapterChatHistory);
+router.post('/:id/volumes/:vid/chapters/:cid/apply-proposal', c.applyChapterProposal);
+router.post('/:id/volumes/:vid/generate', c.generateVolume);
+router.post('/:id/volumes/:vid/pause', c.pauseVolume);
+router.post('/:id/volumes/:vid/resume', c.resumeVolume);
+router.post('/:id/chat', c.chat);
+router.get('/:id/chat-history', c.getChatHistory);
+router.put('/:id/chat-history', c.updateChatHistory);
+router.post('/:id/apply-proposal', c.applyProposal);
+
+module.exports = router;

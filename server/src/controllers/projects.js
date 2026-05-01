@@ -20,8 +20,13 @@ exports.get = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const { title, description, genre } = req.body;
-  db.prepare('UPDATE projects SET title=?, description=?, genre=?, updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=?').run(title, description, genre, req.params.id, req.user.id);
+  const { title, description, genre, synopsis } = req.body;
+  const p = db.prepare('SELECT * FROM projects WHERE id=? AND user_id=?').get(req.params.id, req.user.id);
+  if (!p) return res.status(404).json({ error: 'Not found' });
+  db.prepare('UPDATE projects SET title=?, description=?, genre=?, synopsis=?, updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=?').run(
+    title ?? p.title, description ?? p.description, genre ?? p.genre, synopsis !== undefined ? synopsis : p.synopsis,
+    req.params.id, req.user.id
+  );
   res.json(db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id));
 };
 

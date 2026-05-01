@@ -39,13 +39,19 @@ exports.me = (req, res) => {
 exports.checkAiLimit = (req, res, next) => {
   const user = db.prepare('SELECT plan, ai_calls_today, ai_calls_reset_date FROM users WHERE id = ?').get(req.user.id);
   if (!user) return res.status(404).json({ error: '用户不存在' });
+  // pro 及以上无限次数
+  if (user.plan !== 'free') { next(); return; }
   const today = new Date().toISOString().split('T')[0];
   if (user.ai_calls_reset_date !== today) {
     db.prepare('UPDATE users SET ai_calls_today = 0, ai_calls_reset_date = ? WHERE id = ?').run(today, req.user.id);
     user.ai_calls_today = 0;
   }
-  if (user.plan === 'free' && user.ai_calls_today >= FREE_DAILY_LIMIT) {
-    return res.status(429).json({ error: `免费版每日限${FREE_DAILY_LIMIT}次AI调用，请升级会员` });
+  if (user.ai_calls_today >= FREE_DAILY_LIMIT) {
+    return res.status(429).json({
+      error: `今日 AI 次数已用完（免费版每日 ${FREE_DAILY_LIMIT} 次），明日自动重置`,
+      used: user.ai_calls_today,
+      limit: FREE_DAILY_LIMIT,
+    });
   }
   db.prepare('UPDATE users SET ai_calls_today = ai_calls_today + 1 WHERE id = ?').run(req.user.id);
   next();
