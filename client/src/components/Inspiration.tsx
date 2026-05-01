@@ -25,6 +25,7 @@ const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 async function chaptersToText(selected: Chapter[], allChapters: Chapter[], forceRefresh?: Set<string>): Promise<string> {
   const summaries = await Promise.all(selected.map(async (c) => {
     const globalIdx = allChapters.findIndex(x => x.id === c.id) + 1;
+    if (!c.content.trim()) return null;
     if (!forceRefresh?.has(c.id)) {
       const cached = await aiApi.getSummary(c.id);
       if (cached && Math.abs(cached.content_length - c.content.length) < 20) {
@@ -35,7 +36,7 @@ async function chaptersToText(selected: Chapter[], allChapters: Chapter[], force
     aiApi.saveSummary(c.id, summary, c.content.length);
     return `第${globalIdx}章《${c.title}》：${summary}`;
   }));
-  return summaries.join('\n\n');
+  return summaries.filter(Boolean).join('\n\n');
 }
 
 export default function Inspiration({ projectId, chapters }: Props) {
