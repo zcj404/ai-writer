@@ -63,6 +63,10 @@ export default function Inspiration({ projectId, chapters }: Props) {
   const [randWords, setRandWords] = useState<{ setting: string; relation: string; conflict: string } | null>(null);
   const [randLoading, setRandLoading] = useState(false);
   const [diagnoseChapter, setDiagnoseChapter] = useState<string>('');
+
+  useEffect(() => {
+    if (!diagnoseChapter && chapters.length > 0) setDiagnoseChapter(chapters[0].id);
+  }, [chapters]);
   const [diagnoseResult, setDiagnoseResult] = useState<{dimension:string;issue:string;suggestion:string}[]>([]);
 
   // 从服务端加载配置
