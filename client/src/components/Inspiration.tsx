@@ -241,8 +241,9 @@ export default function Inspiration({ projectId, chapters }: Props) {
         setDiagnoseResult(parsed);
       } catch {
         setResult('解析失败，请重试');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
   };
 

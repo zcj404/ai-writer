@@ -34,14 +34,22 @@ exports.assist = async (req, res) => {
     return res.status(400).json({ error: '参数错误' });
   }
 
+  const JSON_ACTIONS = ['proofread', 'analyze_relations', 'inspiration_combo', 'diagnose'];
   try {
     const prompt = ACTIONS[action](text, context);
-    const message = await client.chat.completions.create({
+    const params = {
       model: MODEL,
       max_tokens: action === 'analyze_relations' ? 4096 : 2048,
       messages: [{ role: 'user', content: prompt }],
-    });
-    res.json({ result: message.choices[0].message.content });
+    };
+    if (JSON_ACTIONS.includes(action)) {
+      params.extra_body = { enable_thinking: false };
+    }
+    const message = await client.chat.completions.create(params);
+    let result = message.choices[0].message.content;
+    // 去除可能残留的 <think>...</think> 块
+    result = result.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+    res.json({ result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

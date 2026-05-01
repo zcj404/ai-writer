@@ -9,7 +9,7 @@ const client = new OpenAI({
 
 const chat = (messages, max_tokens = 4000, model = 'qwen3.6-flash', extra_body = {}) =>
   client.chat.completions.create({ model, messages, max_tokens, extra_body })
-    .then(r => r.choices[0].message.content.trim())
+    .then(r => r.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim())
     .catch(err => {
       const msg = err?.message || '';
       if (err?.status === 429 || msg.includes('insufficient_quota') || msg.includes('Arrearage') || msg.includes('quota')) {
